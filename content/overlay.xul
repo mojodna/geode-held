@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<overlay
+	id="geodeOverlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript" src="chrome://geode-held/content/geode-held.js"/>
+	<script type="application/x-javascript" src="chrome://geode-held/content/late-injector.js"/>
+	<script type="application/x-javascript">
+// Any other initialization...
+	</script>
+</overlay>

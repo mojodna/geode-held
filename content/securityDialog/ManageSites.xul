@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<window id="dialog-site-allow-id"
+        title="Manage Allowed Sites"
+        minwidth="470"
+        maxwidth="550"
+        onload="Loki.ManageSites.init();" 
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <separator orient="vertical" height="15" />
+    <hbox>
+        <separator orient="horizontal" width="5" />
+        <vbox>
+
+            <hbox>
+                <separator orient="horizontal" width="10" />            
+                <description maxwidth="461">
+                    You can specify which sites are allowed to automatically request your location
+                </description>
+                <separator orient="horizontal" width="10" />
+             </hbox>
+            
+            <separator orient="vertical" height="10" />
+
+            <tree width="461" rows="6" id="siteListTree" onselect="Loki.ManageSites.selectItem();" >
+                <treecols >
+                    <treecol id="treecol1-id" label="Domain" primary="true" flex="3"/>
+                    <treecol id="treecol2-id" label="Allow" primary="true" flex="3"/>
+                    <treecol id="treecol2-id" label="Deny" primary="true" flex="3"/>
+                </treecols>
+                <treechildren id ="siteListTreeChildren">
+                </treechildren>
+            </tree>
+
+            <separator orient="vertical" height="5"/>
+
+            <hbox>
+                <button id="buttonRemoveSite"  
+                        disabled="false" width="100" 
+                        label="Remove Site" 
+                        oncommand="Loki.ManageSites.removeItem();" />
+                <button id="buttonRemoveAllSites"   
+                        disabled="false" width="120" 
+                        label="Remove All Sites" 
+                        oncommand="Loki.ManageSites.removeAllItems();" />
+                <separator orient="horizontal" width="50" flex="1"/>
+                <button disabled="false" width="50" 
+                        label="Close" 
+                        oncommand="Loki.ManageSites.close();" />
+            </hbox>
+            <separator orient="vertical" height="5"/>
+        </vbox>
+        <separator orient="horizontal" width="5"/>
+    </hbox>
+    <script src="ManageSites.js"/>
+</window>

@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog id="geoprefs" title="Geolocation Preferences"
+        onload="init(); load();"
+	    style="width: 50em;" 
+        buttons="accept,cancel"
+        ondialogaccept="applyChanges();"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<script type="application/x-javascript">
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is labs.mozilla.com code.
+ *
+ * The Initial Developer of the Original Code is Mozilla Corporation.
+ * Portions created by the Initial Developer are Copyright (C) 2008
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *  Justin Dolske <dolske@mozilla.com> (original author)
+ *  Richard Barnes <rbarnes@bbn.com> (Geode-HELD extension)
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK *****
+-->
+<![CDATA[
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
+var sitedata;
+var listdata;
+var deleteButton;
+var cps = Cc["@mozilla.org/content-pref/service;1"].
+          getService(Ci.nsIContentPrefService);
+
+function init() {
+    list = document.getElementById("list");
+    listdata = document.getElementById("listdata");
+    deleteButton = document.getElementById("deleteButton");
+    deleteButton.disabled = true;
+    
+    sitedata = getSiteData();
+    for (var i = 0; i < sitedata.length; i++) {
+        addToList(sitedata[i].hostname, sitedata[i].fuzzLevel);
+    }
+
+}
+
+function getSiteData() {
+    var results = [];
+
+    // nsIContentPrefService doesn't have an API to list all saved settings,
+    // so we'll have to query its DB directly.
+
+    const query = "SELECT groups.name, prefs.value " +
+                  "FROM prefs " +
+                  "LEFT JOIN groups ON groups.id = prefs.groupID " +
+                  "WHERE prefs.settingID = ( " +
+                  "  SELECT id " +
+                  "  FROM settings " +
+                  "  WHERE name = 'extensions.geode-held.fuzzLevel' " +
+                  ")";
+
+    var stmt = cps.DBConnection.createStatement(query);
+
+    var wrappedStmt = Cc["@mozilla.org/storage/statement-wrapper;1"].
+                      createInstance(Ci.mozIStorageStatementWrapper);
+    wrappedStmt.initialize(stmt);
+
+
+    while (wrappedStmt.step()) {
+        var result = { hostname  : wrappedStmt.row.name,
+                       fuzzLevel : wrappedStmt.row.value };
+        results.push(result);
+    }
+
+    return results;
+}
+
+function addToList(hostname, fuzzLevel) {
+    var treeItem = document.createElement("treeitem");
+    var treeRow = document.createElement("treerow");
+    var col1 = document.createElement("treecell");
+    var col2 = document.createElement("treecell");
+    var col3 = document.createElement("treecell");
+
+    col1.setAttribute("label", hostname);
+    col2.setAttribute("label", fuzzLevel >= 0 ? "Allowed" : "Denied");
+    if (fuzzLevel == -1)
+        col3.setAttribute("label", "");
+    else if (fuzzLevel == 0)
+        col3.setAttribute("label", "Exact Location");
+    else if (fuzzLevel == 200)
+        col3.setAttribute("label", "Neighborhood");
+    else if (fuzzLevel == 10000)
+        col3.setAttribute("label", "City");
+    else
+        col3.setAttribute("label", fuzzLevel + " meters");
+
+    treeRow.appendChild(col1);
+    treeRow.appendChild(col2);
+    treeRow.appendChild(col3);
+    treeItem.appendChild(treeRow);
+
+    // Insert into the list
+    listdata.appendChild(treeItem);
+}
+
+function onSelect() {
+    var isSelected = (list.view.selection.getRangeCount() > 0);
+    deleteButton.disabled = !isSelected;
+}
+
+function deleteSelection() {
+    var index = list.currentIndex;
+    var item = sitedata[index];
+
+    // Remove it from the real storage
+    // Ugh, we need a real URI to do this, but it's not saved in the DB. Just
+    // prepend "http://" to fudge it.
+    var ioService = Cc["@mozilla.org/network/io-service;1"].
+                    getService(Ci.nsIIOService);
+    var uri = ioService.newURI("http://" + item.hostname, null, null);
+
+    cps.removePref(uri, "extensions.geode-held.fuzzLevel");
+
+    // Remove it from our data array
+    sitedata.splice(index, 1);
+
+    // Remove it from the UI
+    listdata.removeChild(listdata.childNodes[index]);
+
+    list.view.selection.clearSelection();
+}
+
+
+///// BEGIN RLB
+    function load() {
+    	loadCurrentPrefs();
+    	setPrivOptsEnabled();
+    	document.getElementById("override").addEventListener("click",setPrivOptsEnabled,false);
+    }
+  
+    function moreHeldInformation(aEvent) {
+      window.opener.openURL("http://tools.ietf.org/html/draft-ietf-geopriv-http-location-delivery");
+    }
+      
+    function testLocation(aEvent) {
+      window.opener.openURL("http://geopriv.dreamhosters.com/geo.html");
+    }
+    
+    function setPrivOptsEnabled(aEvent) {
+   	  dis = (document.getElementById("override").selectedIndex == 0);
+    	
+      document.getElementById("retransmission-allowed").disabled = dis;
+      document.getElementById("retention-expires").disabled = dis;
+      document.getElementById("ruleset-reference").disabled = dis;
+      document.getElementById("note-well").disabled = dis;
+      document.getElementById("r-a-label").disabled = dis;
+      document.getElementById("r-e-label").disabled = dis;
+      document.getElementById("r-r-label").disabled = dis;
+      document.getElementById("n-w-label").disabled = dis;
+    }
+    
+    function loadCurrentPrefs() {
+      var prefsvc = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
+      // Grab values from the preferences
+      var heldServer = prefsvc.getCharPref("extensions.geode-held.held-server");
+      var override = prefsvc.getBoolPref("extensions.geode-held.geopriv.override"); 
+      var retransmissionAllowed = prefsvc.getBoolPref("extensions.geode-held.geopriv.retransmission-allowed");
+      var retentionExpiresTime = prefsvc.getCharPref("extensions.geode-held.geopriv.retention-expires");
+      var rulesetReference = prefsvc.getCharPref("extensions.geode-held.geopriv.ruleset-reference");
+      var noteWell = prefsvc.getCharPref("extensions.geode-held.geopriv.note-well");
+      
+      // Convert Retention-expires to a Date
+	  retentionExpiresTime = parseInt( retentionExpiresTime );
+	  var retentionExpires = new Date();
+	  if (retentionExpiresTime > 0) {
+	     // If there's a time set, use it
+	     retentionExpires.setTime( retentionExpiresTime );
+	  } else {
+	     // Else use 24 hours from now
+	     retentionExpires.setTime( retentionExpires.getTime() + (24*60*60*1000) );
+	  }
+      
+      // Write values to the controls
+      document.getElementById("held-server").value = heldServer;
+      document.getElementById("override").selectedIndex = (override)? 1 : 0;
+      document.getElementById("retransmission-allowed").checked = retransmissionAllowed;
+      document.getElementById("retention-expires").dateValue = retentionExpires;
+      document.getElementById("ruleset-reference").value = rulesetReference;
+      document.getElementById("note-well").value = noteWell;
+    }
+
+    function applyChanges() {
+      // Grab preferences from the controls
+      var heldServer = document.getElementById("held-server").value;
+      var override = (document.getElementById("override").selectedIndex == 1); 
+      var retransmissionAllowed = document.getElementById("retransmission-allowed").checked;
+      var retentionExpires = document.getElementById("retention-expires").dateValue;
+      var rulesetReference = document.getElementById("ruleset-reference").value;
+      var noteWell = document.getElementById("note-well").value;
+    
+      // Write values to the preferences
+      var prefsvc = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
+      prefsvc.setCharPref("extensions.geode-held.held-server", heldServer);
+      prefsvc.setBoolPref("extensions.geode-held.geopriv.override", override);
+      prefsvc.setBoolPref("extensions.geode-held.geopriv.retransmission-allowed", retransmissionAllowed);
+      prefsvc.setCharPref("extensions.geode-held.geopriv.retention-expires", retentionExpires.getTime());
+      prefsvc.setCharPref("extensions.geode-held.geopriv.ruleset-reference", rulesetReference);
+      prefsvc.setCharPref("extensions.geode-held.geopriv.note-well", noteWell);
+      window.close();
+    }
+
+///// END RLB
+
+
+]]>
+</script>
+
+
+<tabbox style="width: 50em;">
+    <tabs>
+       <tab label="Access Permissions"     />
+       <tab label="HELD Server Address"         />
+       <tab label="Location Privacy Settings" />
+    </tabs>
+
+	<tabpanels>
+	<tabpanel>
+		<groupbox style="width: 50em;">
+	    <caption label="Access permissions for location"/>
+	    <separator class="thin"/>
+		<label value="These sites are automatically allowed (or prohibited) from accessing your position:"/>
+		<tree id="list"
+		      seltype="single" rows="5"
+		      onselect="onSelect();">
+		    <treecols>
+		        <treecol label="Site" flex="5"/>
+		        <splitter class="tree-splitter"/>
+		        <treecol label="Permission" flex="1"/>
+		        <splitter class="tree-splitter"/>
+		        <treecol label="Fuzzing" flex="1"/>
+		    </treecols>
+		
+		    <treechildren id="listdata">
+		    </treechildren>
+		</tree>
+		
+		<hbox>
+		    <spacer flex="1"/>
+		    <button id="deleteButton" label="Delete" oncommand="deleteSelection();"/>
+		</hbox>
+		</groupbox>
+	</tabpanel>
+	
+	  <tabpanel>
+		<groupbox style="width: 50em;">
+	    <caption label="HELD server address"/>
+	    <separator class="thin"/>
+	    <description class="desc1">Enter your Location Information Server (LIS) address (e.g. http://lis.example.com/).</description>
+	    <separator class="thin"/>
+	    <description class="desc2">Firefox will retrieve your location using the IETF HELD protocol.  This helps ensure your location is fresh and accurate!</description>
+	    <separator class="thin"/>
+	    <textbox id="held-server"> </textbox>
+	    <separator class="thin"/>
+	    <label id="lookupLocation"
+	         onclick="if (event.button == 0) { moreHeldInformation(event); }"
+	         class="text-link"
+	         value="More information about the HELD protocol..."/>
+	    <separator class="thin"/>
+	    <label id="testLocation"
+	         onclick="if (event.button == 0) { testLocation(event); }"
+	         class="text-link"
+	         value="Test whether your browser can use this HELD server"/>
+		</groupbox>
+	  </tabpanel>    
+	  
+	  <tabpanel>
+		<groupbox  style="width: 50em;">
+	    <caption label="Privacy rules for sites that get location"/>
+	    <description>
+	    	HELD servers provide GEOPRIV location objects.  These objects include pre-set privacy rules that tell the sites you give them to how they may handle them.  You can choose to use the server's pre-set rules or set your own.
+	    </description>
+	    <radiogroup id="override" onchange="setPrivOptsEnabled();">
+	    	<radio id="privLO" label="Allow the LIS to set privacy preferences in location objects"/>
+	    	<radio id="privUser" label="Override the server's privacy settings" />
+	    </radiogroup>
+	    <groupbox id="privacy-rules">
+	    	<caption label="Privacy rules"/>
+	    	<grid>
+	    		<columns>
+	    			<column flex="1"/>
+	    			<column flex="2"/>
+	    		</columns>
+	
+				<rows>
+		    		<row>
+		    			<label id="r-a-label" control="retransmission-allowed">
+		    				Allow sites to send your location to other sites:
+		    			</label>
+		    			<checkbox id="retransmission-allowed"/> 
+		    		</row>
+		    		<row>
+			    		<label id="r-e-label" control="retention-expires">
+			    			Allow sites to keep location until this date:
+			    		</label>
+			    		<datepicker id="retention-expires"/>
+		    		</row>
+		    		<row>
+				    	<label id="r-r-label" control="ruleset-reference">
+				    		URL for additional rules:
+				    	</label>
+				    	<textbox style="width: 30em;" id="ruleset-reference"/>
+		    		</row>
+		    		<row>
+				    	<label id="n-w-label" control="note-well">
+				    		Any additional privacy requests for sites that use your location:
+				    	</label>
+				    	<textbox id="note-well" multiline="true" rows="4" cols="30"/>
+				    </row>
+			    </rows>
+	    	</grid>
+	    </groupbox>
+		</groupbox>
+	  </tabpanel>
+	  </tabpanels>
+</tabbox>
+
+</dialog>

@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+* $Id: WpsLocationSuccessEventImpl.h 659 2007-05-14 18:29:10Z joel $
+*
+* Copyright (C) 2005-2007 Skyhook Wireless, Inc. All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted subject to the following:
+*
+* * Use and redistribution is subject to the Software License and Development
+* Agreement, available at
+* <a href="http://www.skyhookwireless.com">www.skyhookwireless.com</a>
+*
+* * Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?> 
+
+<window title="Loki Location Request" 
+        onload="Loki.RequestLocationPrompt.init();"
+        onclose="Loki.RequestLocationPrompt.close();" 
+        minwidth='470' maxwidth='550' 
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+   
+    <separator orient="vertical" height="15" />
+    <vbox>            
+        <hbox>
+            <separator orient="vertical" width="10" />
+            <label value="This website is requesting the following information about your location:"/>
+        </hbox>
+ 
+        <separator orient="vertical" height="5" />
+
+        <hbox>
+            <separator orient="vertical" width="50" />
+            <label style="min-width:60px; font-weight: 100" value="Website"/>
+            <label id="textDomain" style="font-weight: 900" value="www.skyhookwireless.com"/>
+        </hbox>
+        
+        <hbox>
+            <separator orient="vertical" width="50" />
+            <label style="min-width:60px; font-weight: 100" value="Information"/>
+            <label id="textInformation" style="font-weight: 400" value="www.skyhookwireless.com"/>
+        </hbox>    
+
+        <hbox>
+            <separator orient="vertical" width="10" />
+            <label value="Would you like to allow or deny this request?"/>
+        </hbox>
+        
+        <hbox>
+            <separator orient="vertical" width="50" />
+            <checkbox id="checkboxRemember" label="Remember my selection for future requests from this domain" />
+        </hbox>
+        
+        <separator orient="horizontal" flex="1"  height="15"/>
+    </vbox>  
+    
+    <hbox>
+        <button id="buttonManageSites"  disabled="false" oncommand="Loki.RequestLocationPrompt.manageSites();" >
+            <label value="Manage Sites" />
+        </button>   
+        
+        <separator orient="vertical" flex="1" />
+
+        <button id="buttonAllow"  disabled="false" oncommand="Loki.RequestLocationPrompt.allow();" >
+            <label style="font-weight: 900" value="Allow" />
+        </button>
+        
+        <button id="buttonCancel"  disabled="false" oncommand="Loki.RequestLocationPrompt.deny();" >
+            <label value="Deny" />
+        </button>   
+    </hbox>
+    
+    <separator orient="horizontal" flex="1" height="5" />  
+   
+    <script src="chrome://geode-held/content/securityDialog/RequestLocationPrompt.js"/>
+</window>
+
