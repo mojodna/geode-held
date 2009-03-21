@@ -1,0 +1,63 @@
+/* TOOLBAR ICON */
+#fireeagleaddonfirefoxToolbarButton {
+	list-style-image: url(chrome://geode-held/skin/FireEagleBigButton.png);
+	-moz-image-region:rect(0px 24px 24px 0px);
+	display:none;
+	}
+
+#fireeagleaddonfirefoxToolbarButton:hover {
+	list-style-image: url(chrome://geode-held/skin/FireEagleBigButton.png);
+	-moz-image-region:rect(24px 24px 48px 0px);
+	}
+
+toolbar[iconsize="small"] #fireeagleaddonfirefoxToolbarButton {
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	-moz-image-region:rect(0px 16px 16px 0px);
+	}
+
+toolbar[iconsize="small"] #fireeagleaddonfirefoxToolbarButton:hover {
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	-moz-image-region:rect(16px 16px 32px 0px);
+	}
+
+/* STATUS BAR ICON */
+#fireeagle-icon-button {
+	cursor:pointer;
+	display:none;
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	-moz-image-region:rect(0px 16px 16px 0px);
+	margin:2px 0px;
+	}
+
+#fireeagle-icon-button:hover{
+	opacity:1;
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	-moz-image-region:rect(16px 16px 32px 0px);
+	}
+
+#fireeagle-icon-button[error] {
+	opacity:1;
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	-moz-image-region:rect(32px 16px 48px 0px);
+	}
+
+#fireeagle-icon-button[progress] {
+	list-style-image: url(chrome://geode-held/skin/throber-small.png);
+	-moz-image-region:rect(0px 16px 16px 0px);
+	}	
+	
+#fireeagleaddonfirefoxToolbarButton[disabled="true"] {
+	opacity:.6;
+	}
+
+#fireeagle-icon-button[disabled="true"] {
+	opacity:.8;
+	}
+	
+#feMenuLocationInfo{
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton.png);
+	}
+
+#fireeagleaddonfirefox-menu-item{
+	list-style-image: url(chrome://geode-held/skin/FireEagleLittleButton-single.png);
+	}

@@ -1,2 +1,5 @@
 content geode-held		content/
+skin	geode-held	    classic/1.0	skin/
+locale	geode-held      en-US	locale/en-US/
 overlay chrome://browser/content/browser.xul chrome://geode-held/content/overlay.xul
+overlay chrome://global/content/customizeToolbar.xul    chrome://geode-held/content/customizeToolbarOverlay.xul

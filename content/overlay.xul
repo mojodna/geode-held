@@ -1,11 +1,64 @@
 <?xml version="1.0"?>
 
+<?xml-stylesheet href="chrome://geode-held/skin/fireeagleOverlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://geode-held/locale/fireeagleaddonfirefox.dtd">
 <overlay
 	id="geodeOverlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/x-javascript" src="chrome://geode-held/content/oauth.js"/>
+  <script type="application/x-javascript" src="chrome://geode-held/content/sha1.js"/>
+  <script type="application/x-javascript" src="chrome://geode-held/content/oauthext.js"/>
+  <script type="application/x-javascript" src="chrome://geode-held/content/fe.js"/>
+	<script type="application/x-javascript" src="chrome://geode-held/content/fireeagleOverlay.js"></script>
 	<script type="application/x-javascript" src="chrome://geode-held/content/geode-held.js"/>
 	<script type="application/x-javascript" src="chrome://geode-held/content/late-injector.js"/>
-	<script type="application/x-javascript">
-// Any other initialization...
-	</script>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="fireeagleaddonfirefox-strings" src="chrome://geode-held/locale/fireeagleaddonfirefox.properties"/>
+  </stringbundleset>
+  
+  <!-- Toolbar Button/Menu -->
+  <toolbarpalette id="BrowserToolbarPalette">  
+    <toolbarbutton id="fireeagleaddonfirefoxToolbarButton" 
+                  label="&fireeagleaddonfirefoxToolbar.label;" 
+                  tooltiptext="&fireeagleaddonfirefoxToolbar.tooltip;" 
+                  oncommand="FireEagle.Updater.onToolbarButtonCommand();"
+                  context="feToolbarIconMenu"/>
+  </toolbarpalette>
+
+
+	<!-- right click popup sets -->
+  <popupset>
+    <menupopup id="fireEagleStatusMenu">
+      <menuitem id="feMenuLocationInfo" label="Last Known Location" disabled="true" image="chrome://geode-held/skin/FireEagleLittleButton-single.png"/>
+      <menuitem label="View on Map..." value="http://fireeagle.yahoo.net/my/location" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuseparator/>
+      <menuitem label="Manage My Applications" value="http://fireeagle.yahoo.net/my/apps" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuitem label="Manage My Privacy Settings" value="http://fireeagle.yahoo.net/my/privacy" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuitem label="Manage My Alerts" value="http://fireeagle.yahoo.net/my/alerts" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuseparator/>
+      <menuitem label="Update Fire Eagle" oncommand="FireEagle.Updater.onMenuItemCommand(event);" image="none"/>
+      <menuitem label="Get my location from Fire Eagle" oncommand="FireEagle.Updater.queryFireEagle()" image="none"/>
+    </menupopup>  
+    <menupopup id="feToolbarIconMenu">
+      <menuitem label="Update Fire Eagle" oncommand="FireEagle.Updater.onMenuItemCommand(event);" image="none"/>
+      <menuitem label="Get my location from Fire Eagle" oncommand="FireEagle.Updater.queryFireEagle()" image="none"/>
+      <menuseparator/>
+      <menuitem label="Manage My Applications" value="http://fireeagle.yahoo.net/my/apps" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuitem label="Manage My Privacy Settings" value="http://fireeagle.yahoo.net/my/privacy" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+      <menuitem label="Manage My Alerts" value="http://fireeagle.yahoo.net/my/alerts" oncommand="FireEagle.Updater.openThisUrl(this.value)" image="none"/>
+    </menupopup> 
+  </popupset>
+	
+	<!-- statusbar -->
+	<statusbar id="status-bar">
+		<progressmeter id="fireeagleUpdateProgress" mode="undetermined" style="display:none;margin-top:2px;"/>
+		<statusbarpanel
+			id="fireeagle-icon-button"
+			context="fireEagleStatusMenu"
+			class="statusbarpanel-iconic good"
+			insertafter="statusbar-progressdisplay" 
+			oncommand="FireEagle.Updater.query();"
+			tooltiptext="Fetching your current Fire Eagle location..."/>
+	</statusbar>
 </overlay>

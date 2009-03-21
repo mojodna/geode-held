@@ -372,6 +372,8 @@ var GeoLocThingie = {
 				delete this._geoWatchers[watcher];
 	},
 
+  lastLoc : {},
+
 	/*
 	 * _notifyWatchers
 	 *
@@ -466,6 +468,18 @@ var GeoLocThingie = {
 			var scriptToRun = "window.navigator.geolocation._notifyWatchers("+
 				retloc.toSource() + ");";
 			this._execInWindow(win, scriptToRun);
+			
+			// poor-man's onChange
+			try {
+        if (this.lastLoc && this.lastLoc.latitude != retloc.latitude && this.lastLoc.longitude != retloc.longitude) {
+          this.lastLoc = retloc;
+          this.log("Updating Fire Eagle...");
+          FireEagle.Updater.updateFireEagle(retloc);
+        }
+      }
+      catch (e) {
+        this.log(e);
+      }
 		}
 	},
 

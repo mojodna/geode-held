@@ -1,0 +1,120 @@
+<html>
+<head>
+	<title>Fire Eagle for Firefox</title>
+	<link rel="commands" href="FireEagleAddOn.js"/>
+	<style type="text/css">
+		body{background:#fef9bf url(http://fireeagle.yahoo.net/images/apps_site/header-background-app-pages.gif) center 0px repeat-x;text-align:left;font:100% arial;}
+		#page-wrap{width:760px; margin:5px auto;position:relative;}
+		#brand{width:518px;height:68px;display:block;background:url(chrome://geode-held/skin/fe-add-on-logo3.png) 0 0 no-repeat;}
+		#content{clear:both;margin:40px 0;background:#95B26F;-moz-border-radius:10px;padding:10px 20px;}
+		#sub-content{margin:0px;background:#EDEDEC;-moz-border-radius:0px 0px 10px 10px;padding:0px 20px 10px;color:#333;margin-bottom:10px;border-top:1px solid #C2BE79;}
+		#intro{background:#FEF9BF;-moz-border-radius:10px 10px 0px 0px;padding:5px 20px 15px;margin-top:10px;}
+		#slider{width:650px;margin:30px auto 0px;position:relative;}
+		#shade{background:#EDEDEC url(chrome://geode-held/skin/shade.jpg) no-repeat 0 0;height:35px;}
+		#learn-more{background:url(http://fireeagle.yahoo.net/images/help_tom.png) 2% 10px no-repeat;}
+		#learn-more ul{margin-left:150px;list-style:none;}
+		#learn-more ul li a{background:#eee;-moz-border-radius:10px;margin:10px 0;padding:10px;display:block;text-decoration:none;}
+		#learn-more ul li a:hover{background:#afe4d8;color:#fff;}
+		.tab-off{background:#ddd;border:1px solid #ddd;-moz-border-radius:10px 10px 0px 0px;}
+		.info-images{margin:10px;border:1px solid #333;position:relative;z-index:2;}
+		.scroll{height:370px;width:650px;overflow:auto;overflow-x:hidden;position:relative;clear:left;background: #FFFFFF;-moz-border-radius:10px;}
+		.scrollContainer div.panel{padding:20px 25px;height:350px;width:600px;}
+		.scrollContainer div.panel h3{display:none;}
+		.scrollContainer div.panel p{width:580px;margin:10px auto;}
+		ul.navigation {list-style:none;margin:0;padding:0;padding-bottom:9px;}
+		h1{margin:10px 0;}
+		ul.navigation{padding-bottom:10px;} 
+		ul.navigation li{display:inline;margin-left:8px;}
+		ul.navigation a{padding:10px;color:#000;text-decoration:none;}
+		ul.navigation a:hover{background-color:#f6f6f6;-moz-border-radius:10px 10px 0px 0px;}
+		ul.navigation a.selected{background-color:#fff;-moz-border-radius:10px 10px 0px 0px;border:1px solid #fff;}
+		ul.navigation a:focus{outline:none;}
+		.scrollButtons{position:absolute;top:170px;cursor:pointer;z-index:35;display:block;}
+		.scrollButtons.left{left:-30px;width:30px;height:77px;background:url(chrome://geode-held/skin/btn_prev.gif) no-repeat;}
+		.scrollButtons.right{right:-30px;width:30px;height:77px;background:url(chrome://geode-held/skin/btn_next.gif) no-repeat;}
+		.hide{display:none;}
+	</style>
+	<script src="chrome://geode-held/content/lib/jquery-1.2.6.min.js" type="text/javascript"  charset="utf-8"></script>
+	<script src="chrome://geode-held/content/lib/jquery.scrollTo-min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://geode-held/content/lib/jquery.localscroll-min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://geode-held/content/lib/jquery.serialScroll-min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="chrome://geode-held/content/lib/coda-slider.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">	
+	var testTab = {
+		init : function() {
+			var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(Components.interfaces.nsIWindowMediator);
+	  	for (var found = false, index = 0, tabbrowser = wm.getEnumerator('navigator:browser').getNext().getBrowser(); index < tabbrowser.mTabs.length && !found; index++) {
+	    	var currentTab = tabbrowser.mTabs[index];
+				if (currentTab.getAttribute("fireeagleupdater") == "step1") {
+	      	tabbrowser.selectedTab = currentTab;
+	      	tabbrowser.focus();
+	      	found = true;
+					var intro = document.getElementById("message").innerHTML = "<h1>Congratulations!</h1>You have successfully installed the Fire Eagle add-on";
+	    	} else {
+					var intro = document.getElementById("message").innerHTML = "";
+				}
+			}
+		}
+	};
+	window.onload = testTab.init;
+	</script>
+</head>
+<body>
+<div id="page-wrap">
+	<div id="content">
+
+		<div id="intro">
+			<h1 id="brand"></h1>
+			<div id="message"></div>
+		</div>
+
+		<div id="sub-content">
+			<div id="slider">    
+				<ul class="navigation">
+					<li><a class="tab-off first" href="#status-bar">Status bar</a></li>
+		  		<li><a class="tab-off" href="#toolbar">Toolbar</a></li>
+					<li><a class="tab-off" href="#page-rc">Tools Menu</a></li>
+					<li><a class="tab-off" href="#learn-more">Learn More...</a></li>
+				</ul>
+				<div class="scroll">
+					<div class="scrollContainer">
+						
+						<div class="panel" id="status-bar">
+							<h3>Status Bar</h3>
+							<p>Clicking the Fire Eagle icon in the status bar will retrieve your current location (via Loki and Geode) and then update Fire Eagle with that location.</p>
+							<p>You can right-click the Fire Eagle icon in the status bar to access various Fire Eagle related actions.</p>
+							<img src="chrome://geode-held/skin/intro-image-2.png" class="info-images" />
+						</div>
+						
+						<div class="panel" id="toolbar">
+							<h3>Toolbar</h3>
+								<p>Clicking the Fire Eagle icon in the toolbar will retrieve your current location (via Loki and Geode) and then update Fire Eagle with that location.</p>
+								<p>You can right-click the Fire Eagle icon in the toolbar to access various Fire Eagle related actions.</p>
+							<img src="chrome://geode-held/skin/intro-image-3.png" class="info-images" />
+						</div>
+						
+						<div class="panel" id="page-rc">
+							<h3>Tools Menu</h3>
+							<p>A full assortment of Fire Eagle related actions is available in the Tools menu.</p>
+							<p>&nbsp;</p>
+							<img src="chrome://geode-held/skin/intro-image-4.png" class="info-images" />
+						</div>
+						
+						<div class="panel" id="learn-more">
+							<h3>More info...</h3>
+							<ul>
+								<li><a href="http://fireeagle.yahoo.net">Fire Eagle</a></li>
+								<li><a href="http://fireeagle.yahoo.net/my/location">My Location</a></li>
+								<li><a href="http://fireeagle.yahoo.net/gallery">Application Gallery</a></li>
+								<li><a href="http://fireeagle.yahoo.net/developer">Developer Documentation</a></li>
+								<li><a href="http://fireeagle.yahoo.net/firefox">Fire Eagle Add-on Product Page</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		<div id="shade"></div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>

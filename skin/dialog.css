@@ -1,0 +1,17 @@
+dialog > box > vbox {
+	background:transparent url("chrome://geode-held/skin/FireEagleBigBigButton-single.png") 0px 0px no-repeat;
+	font-size:125%;
+	font-family:arial;
+	margin:14px;
+}
+
+dialog > box > vbox > label{
+	margin:0px 0px 8px 82px;
+	white-space:pre;
+}
+
+dialog > box > vbox > description{
+	margin:0px 0px 8px 82px;
+	width:280px !important;
+	line-height:20px;
+}

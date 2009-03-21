@@ -1,0 +1,23 @@
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://geode-held/skin/dialog.css" type="text/css"?>
+<dialog
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  id="myDialogId"
+  title="Fire Eagle Message"
+  ondialogaccept="return onOK();"
+	ondialogcancel="return window.close();" 
+  onload="onLoad();"
+  windowtype="myDialogWindowType"
+	orient="vertical" 
+	autostretch="always"
+	persist="screenX screenY" 
+	screenX="200" screenY="24">
+  
+	<script type="application/x-javascript" src="chrome://geode-held/content/installdialog.js"/>
+	
+	<box align="center" orient="horizontal" flex="1">
+		<vbox flex="1" id="main">
+			<description id="install"></description>
+		</vbox>
+	</box>
+</dialog>
